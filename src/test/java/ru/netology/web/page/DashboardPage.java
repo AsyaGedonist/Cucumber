@@ -14,8 +14,9 @@ import static com.codeborne.selenide.Selenide.$$;
 
 public class DashboardPage {
   private SelenideElement heading = $("[data-test-id=dashboard]");
-  //private ElementsCollection replenButtons = $$(".button_size_s");
-
+  private SelenideElement inputAmount = $("[data-test-id=amount] input");
+  private SelenideElement inputFrom = $("[data-test-id=from] input");
+  private SelenideElement replenButton = $("[data-test-id=action-transfer]");
   private ElementsCollection cards = $$(".list__item div");
   private final String balanceStart = "баланс: ";
   private final String balanceFinish = " р.";
@@ -25,7 +26,6 @@ public class DashboardPage {
   }
 
   public int getCardBalance(String id) {
-    // TODO: перебрать все карты и найти по атрибуту data-test-id
     val text = cards.findBy(attribute("data-test-id", id)).text();
     return extractBalance(text);
   }
@@ -37,8 +37,15 @@ public class DashboardPage {
     return Integer.parseInt(value);
   }
 
-  public DashboardPage replenishment (DataHelper.CardInfo cardInfo) {
-    cards.findBy(attribute("data-test-id", cardInfo.getDataTestId())).click();
+  public DashboardPage replenishmentOpen (DataHelper.CardInfo cardInfo) {
+    cards.findBy(attribute("data-test-id", cardInfo.getDataTestId())).find(".button").click();
+    return new DashboardPage();
+  }
+
+  public DashboardPage replenishment (double sum, DataHelper.CardInfo cardInfo){
+    inputAmount.setValue(String.valueOf(sum));
+    inputFrom.setValue(cardInfo.getNumber());
+    replenButton.click();
     return new DashboardPage();
   }
 
