@@ -1,5 +1,8 @@
 package ru.netology.web.test;
 
+import com.codeborne.selenide.Configuration;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.netology.web.data.DataHelper;
 import ru.netology.web.page.LoginPageV1;
@@ -7,36 +10,32 @@ import ru.netology.web.page.LoginPageV2;
 import ru.netology.web.page.LoginPageV3;
 
 import static com.codeborne.selenide.Selenide.open;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MoneyTransferTest {
-    @Test
-    void shouldTransferMoneyBetweenOwnCardsV1() {
-      var authInfo = DataHelper.getAuthInfo();
-      var verificationCode = DataHelper.getVerificationCodeFor(authInfo);
 
+    @BeforeEach
+    void setup() {
+      Configuration.holdBrowserOpen = true;
       open("http://localhost:9999");
-      new LoginPageV1()
-              .validLogin(authInfo)
-              .validVerify(verificationCode);
     }
 
-  @Test
-  void shouldTransferMoneyBetweenOwnCardsV2() {
-    open("http://localhost:9999");
-    var loginPage = new LoginPageV2();
-    var authInfo = DataHelper.getAuthInfo();
-    var verificationPage = loginPage.validLogin(authInfo);
-    var verificationCode = DataHelper.getVerificationCodeFor(authInfo);
-    verificationPage.validVerify(verificationCode);
-  }
+    @Test
+    void shouldTransferMoneyBetweenOwnCardsV1() {
+      var loginPage = new LoginPageV1();
+      var authInfo = DataHelper.getAuthInfo();
+      var firstCardInfo = DataHelper.getFirstCardInfo(authInfo);
+      var secondCardInfo = DataHelper.getSecondCardInfo(authInfo);
 
-  @Test
-  void shouldTransferMoneyBetweenOwnCardsV3() {
-    var loginPage = open("http://localhost:9999", LoginPageV3.class);
-    var authInfo = DataHelper.getAuthInfo();
-    var verificationPage = loginPage.validLogin(authInfo);
-    var verificationCode = DataHelper.getVerificationCodeFor(authInfo);
-    verificationPage.validVerify(verificationCode);
-  }
+      var verificationPage = loginPage.validLogin(authInfo);
+      var verificationCode = DataHelper.getVerificationCodeFor(authInfo);
+      var dashboardPage = verificationPage.validVerify(verificationCode);
+
+      var firstCardBalance = dashboardPage.getCardBalance(firstCardInfo.getDataTestId());
+      var secondCardBalance = dashboardPage.getCardBalance(secondCardInfo.getDataTestId());
+
+      assertEquals(firstCardBalance, 10000);
+      assertEquals(secondCardBalance, 10000);
+    }
 }
 
