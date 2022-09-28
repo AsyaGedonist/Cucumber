@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import ru.netology.web.data.DataHelper;
 import ru.netology.web.page.LoginPageV1;
 
@@ -39,9 +41,12 @@ class MoneyTransferTest {
         assertEquals(secondCardBalance, secondCardInfo.getStartBalance());
     }
 
-    @Test
-    @DisplayName("Should transfer 999.99 to first card from second")
-    void shouldTransferMoneyBetweenOwnCardsV1() {
+    @ParameterizedTest
+    @DisplayName("Should transfer borderline to first card from second")
+    @CsvSource(
+            {"1000"}
+    )
+    void shouldTransferMoneyBetweenOwnCardsV1(double amount) {
         var loginPage = new LoginPageV1();
         var authInfo = DataHelper.getAuthInfo();
         var firstCardInfo = DataHelper.getFirstCardInfo(authInfo);
@@ -51,11 +56,17 @@ class MoneyTransferTest {
         var verificationCode = DataHelper.getVerificationCodeFor(authInfo);
         var dashboardPage = verificationPage.validVerify(verificationCode);
 
-        var firstCardBalance = dashboardPage.getCardBalance(firstCardInfo.getDataTestId());
-        var secondCardBalance = dashboardPage.getCardBalance(secondCardInfo.getDataTestId());
+        var firstCardBalanceBefore = dashboardPage.getCardBalance(firstCardInfo.getDataTestId());
+        var secondCardBalanceBefore = dashboardPage.getCardBalance(secondCardInfo.getDataTestId());
 
         dashboardPage.replenishmentOpen(firstCardInfo)
-                .replenishment(999.99, secondCardInfo);
+                .replenishment(amount, secondCardInfo);
+
+        var firstCardBalanceAfter = dashboardPage.getCardBalance(firstCardInfo.getDataTestId());
+        var secondCardBalanceAfter = dashboardPage.getCardBalance(secondCardInfo.getDataTestId());
+
+        assertEquals((firstCardBalanceBefore + amount), firstCardBalanceAfter);
+        assertEquals((secondCardBalanceBefore - amount), secondCardBalanceAfter);
     }
 }
 
