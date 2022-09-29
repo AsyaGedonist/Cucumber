@@ -20,15 +20,23 @@ public class DashboardPage {
   private ElementsCollection cards = $$(".list__item div");
   private final String balanceStart = "баланс: ";
   private final String balanceFinish = " р.";
+  private final String cardNumberStart = "**** **** **** ";
+  private final String cardNumberFinish = ", баланс";
 
   public DashboardPage() {
     heading.shouldBe(visible);
   }
 
-  public int getCardBalance(String id) {
-    val text = cards.findBy(attribute("data-test-id", id)).text();
+//  public int getCardBalanceV1(String id) {
+//    val text = cards.findBy(attribute("data-test-id", id)).text();
+//    return extractBalance(text);
+//  }
+
+    public int getCardBalanceV2(DataHelper.CardInfo cardInfo) {
+    val text = cards.findBy(Condition.text(cardInfo.getMaskNumber())).text();
     return extractBalance(text);
   }
+
 
   private int extractBalance(String text) {
     val start = text.indexOf(balanceStart);
@@ -37,12 +45,18 @@ public class DashboardPage {
     return Integer.parseInt(value);
   }
 
-  public DashboardPage replenishmentOpen (DataHelper.CardInfo cardInfo) {
-    cards.findBy(attribute("data-test-id", cardInfo.getDataTestId())).find(".button").click();
+//  public DashboardPage replenishmentOpenV1 (DataHelper.CardInfo cardInfo) {
+//    cards.findBy(attribute("data-test-id", cardInfo.getDataTestId())).find(".button").click();
+//    return new DashboardPage();
+//  }
+
+    public DashboardPage replenishmentOpenV2 (DataHelper.CardInfo cardInfo) {
+    cards.findBy(Condition.text(cardInfo.getMaskNumber())).find(".button").click();
     return new DashboardPage();
   }
 
-  public DashboardPage replenishment (double sum, DataHelper.CardInfo cardInfo){
+
+  public DashboardPage replenishment (int sum, DataHelper.CardInfo cardInfo){
     inputAmount.setValue(String.valueOf(sum));
     inputFrom.setValue(cardInfo.getNumber());
     replenButton.click();
