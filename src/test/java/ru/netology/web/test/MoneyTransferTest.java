@@ -162,4 +162,3 @@ class MoneyTransferTest {
         assertEquals(firstCardBalanceBefore, firstCardBalanceAfter);
     }
 }
-
