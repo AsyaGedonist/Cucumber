@@ -6,6 +6,7 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import ru.netology.web.data.DataHelper;
+import ru.netology.web.page.DashboardPage;
 import ru.netology.web.page.LoginPageV1;
 
 import static com.codeborne.selenide.Selenide.open;
@@ -35,16 +36,16 @@ class MoneyTransferTest {
         var firstCardBalance = dashboardPage.getCardBalanceV2(firstCardInfo);
         var secondCardBalance = dashboardPage.getCardBalanceV2(secondCardInfo);
         var differencesAmount = firstCardBalance - secondCardBalance;
-                
+
         if (differencesAmount < 0) {
-                dashboardPage.replenishmentOpenV2(firstCardInfo)
-                        .replenishment(differencesAmount/2, secondCardInfo);
+            dashboardPage.replenishmentOpenV2(firstCardInfo)
+                    .replenishment(differencesAmount/2, secondCardInfo);
         } else if (differencesAmount > 0) {
-                dashboardPage.replenishmentOpenV2(secondCardInfo)
-                        .replenishment(differencesAmount/2, firstCardInfo);
+            dashboardPage.replenishmentOpenV2(secondCardInfo)
+                    .replenishment(differencesAmount/2, firstCardInfo);
         }
     }
-    
+
     @Test
     @DisplayName("Should view right start balance")
     void shouldViewStartBalance() {
@@ -116,32 +117,49 @@ class MoneyTransferTest {
         assertEquals((secondCardBalanceBefore + amount), secondCardBalanceAfter);
     }
 
-//    @Test
-//    @DisplayName("Should not transfer to first card from second - not enough money")
-//    void shouldNotTransferMoneyBetweenOwnCardsV1() {
-//        var loginPage = new LoginPageV1();
-//        var authInfo = DataHelper.getAuthInfo();
-//        var firstCardInfo = DataHelper.getFirstCardInfo(authInfo);
-//        var secondCardInfo = DataHelper.getSecondCardInfo(authInfo);
-//
-//        var verificationPage = loginPage.validLogin(authInfo);
-//        var verificationCode = DataHelper.getVerificationCodeFor(authInfo);
-//        var dashboardPage = verificationPage.validVerify(verificationCode);
-//
-//        var firstCardBalanceBefore = dashboardPage.getCardBalanceV2(firstCardInfo);
-//        var secondCardBalanceBefore = dashboardPage.getCardBalanceV2(secondCardInfo);
-//
-//        dashboardPage.replenishmentOpenV2(firstCardInfo)
-//                .replenishment(10_001, secondCardInfo);
-//
-//        var firstCardBalanceAfter = dashboardPage.getCardBalanceV2(firstCardInfo);
-//        var secondCardBalanceAfter = dashboardPage.getCardBalanceV2(secondCardInfo);
-//
-//        assertEquals((firstCardBalanceBefore + 100_000), firstCardBalanceAfter);
-//        assertEquals((secondCardBalanceBefore - 100_000), secondCardBalanceAfter);
-//    }
+    @Test
+    @DisplayName("Should not transfer to first card from second - not enough money")
+    void shouldNotTransferMoneyBetweenOwnCardsV1() {
+        var loginPage = new LoginPageV1();
+        var authInfo = DataHelper.getAuthInfo();
+        var firstCardInfo = DataHelper.getFirstCardInfo(authInfo);
+        var secondCardInfo = DataHelper.getSecondCardInfo(authInfo);
 
+        var verificationPage = loginPage.validLogin(authInfo);
+        var verificationCode = DataHelper.getVerificationCodeFor(authInfo);
+        var dashboardPage = verificationPage.validVerify(verificationCode);
 
+        var firstCardBalanceBefore = dashboardPage.getCardBalanceV2(firstCardInfo);
+        var secondCardBalanceBefore = dashboardPage.getCardBalanceV2(secondCardInfo);
 
+        dashboardPage.replenishmentOpenV2(firstCardInfo)
+                .replenishment(10_001, secondCardInfo);
+
+        var secondCardBalanceAfter = dashboardPage.getCardBalanceV2(secondCardInfo);
+
+        assertEquals(secondCardBalanceBefore, secondCardBalanceAfter);
+    }
+    @Test
+    @DisplayName("Should not transfer to second card from first - not enough money")
+    void shouldNotTransferMoneyBetweenOwnCardsV2() {
+        var loginPage = new LoginPageV1();
+        var authInfo = DataHelper.getAuthInfo();
+        var firstCardInfo = DataHelper.getFirstCardInfo(authInfo);
+        var secondCardInfo = DataHelper.getSecondCardInfo(authInfo);
+
+        var verificationPage = loginPage.validLogin(authInfo);
+        var verificationCode = DataHelper.getVerificationCodeFor(authInfo);
+        var dashboardPage = verificationPage.validVerify(verificationCode);
+
+        var firstCardBalanceBefore = dashboardPage.getCardBalanceV2(firstCardInfo);
+        var secondCardBalanceBefore = dashboardPage.getCardBalanceV2(secondCardInfo);
+
+        dashboardPage.replenishmentOpenV2(secondCardInfo)
+                .replenishment(10_001, firstCardInfo);
+
+        var firstCardBalanceAfter = dashboardPage.getCardBalanceV2(firstCardInfo);
+
+        assertEquals(firstCardBalanceBefore, firstCardBalanceAfter);
+    }
 }
 

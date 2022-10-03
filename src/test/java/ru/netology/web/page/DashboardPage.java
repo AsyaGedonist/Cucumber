@@ -14,15 +14,9 @@ import static com.codeborne.selenide.Selenide.$$;
 
 public class DashboardPage {
   private SelenideElement heading = $("[data-test-id=dashboard]");
-  private SelenideElement inputAmount = $("[data-test-id=amount] input");
-  private SelenideElement inputFrom = $("[data-test-id=from] input");
-  private SelenideElement replenButton = $("[data-test-id=action-transfer]");
   private ElementsCollection cards = $$(".list__item div");
   private final String balanceStart = "баланс: ";
   private final String balanceFinish = " р.";
-  private final String cardNumberStart = "**** **** **** ";
-  private final String cardNumberFinish = ", баланс";
-
   public DashboardPage() {
     heading.shouldBe(visible);
   }
@@ -37,7 +31,6 @@ public class DashboardPage {
     return extractBalance(text);
   }
 
-
   private int extractBalance(String text) {
     val start = text.indexOf(balanceStart);
     val finish = text.indexOf(balanceFinish);
@@ -50,17 +43,11 @@ public class DashboardPage {
 //    return new DashboardPage();
 //  }
 
-    public DashboardPage replenishmentOpenV2 (DataHelper.CardInfo cardInfo) {
+    public ReplenishmentPage replenishmentOpenV2 (DataHelper.CardInfo cardInfo) {
     cards.findBy(Condition.text(cardInfo.getMaskNumber())).find(".button").click();
-    return new DashboardPage();
+    return new ReplenishmentPage();
   }
 
 
-  public DashboardPage replenishment (int sum, DataHelper.CardInfo cardInfo){
-    inputAmount.setValue(String.valueOf(sum));
-    inputFrom.setValue(cardInfo.getNumber());
-    replenButton.click();
-    return new DashboardPage();
-  }
 
 }
