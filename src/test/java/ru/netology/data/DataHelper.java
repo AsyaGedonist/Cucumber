@@ -1,4 +1,4 @@
-package ru.netology.web.data;
+package ru.netology.data;
 
 import lombok.Value;
 
@@ -14,11 +14,6 @@ public class DataHelper {
   public static AuthInfo getAuthInfo() {
     return new AuthInfo("vasya", "qwerty123");
   }
-
-  public static AuthInfo getOtherAuthInfo(AuthInfo original) {
-    return new AuthInfo("petya", "123qwerty");
-  }
-
   @Value
   public static class VerificationCode {
     private String code;
